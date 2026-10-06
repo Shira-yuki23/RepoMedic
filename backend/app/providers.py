@@ -28,5 +28,5 @@ class MockDiagnosisProvider:
                 'Add a regression test that fails with the reproduced symptom before making a fix.',
                 'Apply a focused fix, then run the regression test and the relevant project checks.',
             ],
-            disclaimer='Mock output only. Suggestions are unverified. Nebius and Nemotron integration is planned for a later milestone.',
+            disclaimer='Mock output only. Suggestions are unverified. Select live mode to analyze source code once server credentials are configured.',
         )
