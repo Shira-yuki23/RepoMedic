@@ -1,48 +1,64 @@
 # RepoMedic
 
-Repository triage for the Nebius × NVIDIA hackathon project. Submit a GitHub repository URL and a bug description to receive a structured **mock** investigation checklist.
+Repository triage for the Nebius × NVIDIA hackathon project. React/Vite + FastAPI, with a mock demo and a live Nebius/Nemotron analysis path.
 
-## Milestone 1
+## Features
 
-- React/Vite frontend with validation, loading, error, and result states
-- FastAPI backend with validated request/response models
-- Keyword-based mock diagnosis provider
-- MIT license and API tests
+- Repository URL and bug description form with mock/live modes
+- Bounded public GitHub source retrieval, pinned to a commit
+- Nebius Token Factory inference with configurable Nemotron model
+- Structured hypotheses, investigation steps, and validated source citations
+- Server-side secrets, demo access token, timeouts, and two concurrent live slots
+- Same-origin production hosting with Docker and a Render Blueprint
+- MIT license and API/provider/retrieval tests
 
-This version does not fetch repositories, analyze source code, or call an AI model. A syntactically valid URL does not guarantee that a repository exists or is public.
+Live integration is implemented but needs a configured Nebius account/key and a real inference smoke test. Public hosting is not yet provisioned. Mock mode works without accounts.
 
-## Run locally
+## Local setup
 
-Prerequisites: Node.js 20.19+ or 22.12+, npm, Python 3.10+.
-
-In terminal 1:
-
-```sh
-cd backend
-python -m venv .venv
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
-python -m pip install -r requirements-dev.txt
-python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-In terminal 2:
+Prerequisites: Node.js 20.19+ or 22.12+, npm, Python 3.11+.
 
 ```sh
 cd frontend
 npm ci
-npm run dev
+npm run build
 ```
-
-Open http://127.0.0.1:5173. API docs: http://127.0.0.1:8000/docs.
-Vite forwards `/api` to FastAPI, so no cross-origin browser configuration is needed for local development.
-
-## Verify
 
 ```sh
 cd backend
-python -m pytest
+python -m venv .venv
+# Windows PowerShell:
+.venv\Scripts\Activate.ps1
+# macOS/Linux: source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Open http://127.0.0.1:8000. FastAPI serves the built UI and API together. API docs: http://127.0.0.1:8000/docs.
+
+For frontend development, run `npm run dev` in `frontend` and use http://127.0.0.1:5173. Vite proxies `/api` to port 8000. In restricted environments where the Vite config bundler cannot read ancestor directories, build with `npm run build -- --configLoader native`.
+
+## Enable live mode
+
+Copy `backend/.env.example` to `backend/.env`. Set `NEBIUS_API_KEY`, an available `NEBIUS_MODEL`, and a separate `REPOMEDIC_ACCESS_TOKEN`. Restart the backend. Never commit real secrets or put the Nebius key in the browser. Live mode requires the demo access token and sends your bug report plus selected public source excerpts to Nebius.
+
+## API
+
+- `GET /api/health`: service health
+- `GET /api/config`: live availability and model name, without credentials
+- `POST /api/diagnose`: structured mock or live report
+
+```json
+{"repo_url":"https://github.com/owner/repository","bug_description":"The API returns an incorrect value.","mode":"mock"}
+```
+
+For `mode: live`, provide `X-RepoMedic-Token`. Invalid input returns 422; incorrect token 401; missing server configuration 503; upstream timeout 504. Model errors are reported without silently substituting a mock report.
+
+## Verification
+
+```sh
+cd backend
+python -m pytest -q
 ```
 
 ```sh
@@ -50,36 +66,13 @@ cd frontend
 npm run build
 ```
 
-## API
+Tests cover mock flow, input validation, bounded retrieval, pinned evidence, rejected invented citations, provider errors, access control, and static frontend hosting. Provider tests use mocked HTTP responses; they do not establish real account/model availability.
 
-`GET /api/health` returns service status and mock mode.
+## Deployment and architecture
 
-`POST /api/diagnose` accepts:
+See [deployment guide](docs/deployment.md) for account setup, credentials, Render, Docker, limits, and remaining verification. See [architecture](docs/architecture.md) for the request flow.
 
-```json
-{"repo_url":"https://github.com/owner/repository","bug_description":"Clicking the submit button causes a network error."}
-```
-
-The response contains `mode`, `repo_url`, `title`, `summary`, `steps`, and `disclaimer`. Invalid input returns HTTP 422.
-
-## Structure and architecture
-
-```text
-frontend/                 React UI and Vite development proxy
-backend/app/main.py       HTTP endpoints
-backend/app/schemas.py    Validated API contract
-backend/app/providers.py Diagnosis provider boundary and mock implementation
-backend/tests/           API regression tests
-docs/architecture.md     Flow, boundaries, and next milestone
-```
-
-## Roadmap
-
-1. Completed: input → validated API → mock checklist → report.
-2. Next: implement a Nebius-hosted Nemotron provider behind `DiagnosisProvider`; keep credentials on the backend.
-3. Later: bounded repository ingestion, grounded findings with file references, and patch suggestions with human review.
-
-Production hosting is not configured. The frontend build requires an `/api` reverse proxy to FastAPI. Never put model API keys in frontend code.
+Live mode reviews a bounded source sample rather than the entire repository. Suggestions are hypotheses. Code and tests are not executed; patches are not applied.
 
 ## License
 
