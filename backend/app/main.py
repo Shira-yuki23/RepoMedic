@@ -34,7 +34,7 @@ async def diagnose(request: DiagnosisRequest, x_repomedic_token: str = Header(de
     settings = Settings.from_env()
     if not settings.live_available:
         raise HTTPException(503, 'Live diagnosis needs server-side Nebius and demo access-token configuration.')
-    if not secrets.compare_digest(x_repomedic_token, settings.access_token):
+    if not secrets.compare_digest(x_repomedic_token.encode(), settings.access_token.encode()):
         raise HTTPException(401, 'Enter the correct demo access token to use live diagnosis.')
     try:
         await asyncio.wait_for(live_slots.acquire(), timeout=1)
