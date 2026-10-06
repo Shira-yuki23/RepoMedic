@@ -118,6 +118,15 @@ def test_live_mode_requires_demo_access_token(monkeypatch):
     assert 'test-key' not in client.get('/api/config').text
 
 
+def test_non_ascii_access_token_is_rejected_cleanly(monkeypatch):
+    monkeypatch.setenv('NEBIUS_API_KEY', 'test-key')
+    monkeypatch.setenv('REPOMEDIC_ACCESS_TOKEN', 'demo-token')
+    from app.main import diagnose
+    with pytest.raises(HTTPException) as error:
+        asyncio.run(diagnose(REQUEST, x_repomedic_token='☃'))
+    assert error.value.status_code == 401
+
+
 def test_production_static_frontend_is_served():
     response = TestClient(app).get('/')
     assert response.status_code == 200
