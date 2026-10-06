@@ -2,7 +2,11 @@
 
 ## Status
 
-Live retrieval and Nebius/Nemotron integration are implemented. Account creation, server credentials, a live model smoke test, and a public deployment must still be completed. Mock mode works without credentials.
+Public demo: https://repomedic-65eq.onrender.com. The Docker build, startup, and health checks succeeded on Render's free plan on October 7, 2026. Live retrieval and Nebius/Nemotron integration are implemented; Nebius credit activation, server credentials, and a real model smoke test remain pending. Mock mode works without credentials.
+
+## Hackathon credits
+
+The [official hackathon resources](https://nebiusglobalaihackathon.devpost.com/resources) offer $25 Token Factory credits through the [Nebius credit-request form](https://nebius.com/promo-code?utm_promo_activation_code=NEBIUS-DEVPOST-GLOBAL26&utm_promo_code_type=Token_Factory&utm_promo_event_code=2026-devpost-global-ai-hack), using activation code `NEBIUS-DEVPOST-GLOBAL26`. The form requests a promotional code; it does not itself confirm that credits have been activated. The resources also advertise another $25 through the Nebius Builders Program. Follow the organizer's instructions and verify the resulting balance in Token Factory.
 
 ## Accounts and secrets
 
