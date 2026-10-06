@@ -12,7 +12,7 @@ Repository triage for the Nebius × NVIDIA hackathon project. React/Vite + FastA
 - Same-origin production hosting with Docker and a Render Blueprint
 - MIT license and API/provider/retrieval tests
 
-Live integration is implemented but needs a configured Nebius account/key and a real inference smoke test. Public hosting is not yet provisioned. Mock mode works without accounts.
+Public demo: https://repomedic-65eq.onrender.com (Render free plan). Live integration is implemented but needs a configured Nebius account/key and a real inference smoke test. Mock mode works without accounts.
 
 ## Local setup
 
